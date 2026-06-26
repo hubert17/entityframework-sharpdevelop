@@ -12,7 +12,7 @@ namespace System.Data.Entity.Infrastructure.DependencyResolution
     using System.Data.Entity.Internal.ConfigFile;
     using System.Data.Entity.ModelConfiguration.Internal.UnitTests;
     using System.Data.Entity.SqlServer;
-    using System.Data.Entity.SqlServerCompact;
+    // using System.Data.Entity.SqlServerCompact; // SqlServerCompact not in this fork
     using System.Data.Entity.Utilities;
     using System.Globalization;
     using System.Linq;

@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Open Technologies, Inc. All rights reserved. See License.txt in the project root for license information.
+// Copyright (c) Microsoft Open Technologies, Inc. All rights reserved. See License.txt in the project root for license information.
 
 namespace System.Data.Entity.SqlServerCompact.SqlGen
 {
@@ -6,7 +6,7 @@ namespace System.Data.Entity.SqlServerCompact.SqlGen
     using System.Data.Entity.Core.Common.CommandTrees;
     using System.Data.Entity.Core.Common.CommandTrees.ExpressionBuilder;
     using System.Data.Entity.Core.Metadata.Edm;
-    using System.Data.Entity.SqlServerCompact.SqlGen;
+    // using System.Data.Entity.SqlServerCompact.SqlGen; // SqlServerCompact not in this fork
     using System.Text;
     using System.Text.RegularExpressions;
     using Xunit;

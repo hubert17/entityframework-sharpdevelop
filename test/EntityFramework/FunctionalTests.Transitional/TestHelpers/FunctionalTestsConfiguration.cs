@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Open Technologies, Inc. All rights reserved. See License.txt in the project root for license information.
+// Copyright (c) Microsoft Open Technologies, Inc. All rights reserved. See License.txt in the project root for license information.
 
 namespace System.Data.Entity.TestHelpers
 {
@@ -6,7 +6,7 @@ namespace System.Data.Entity.TestHelpers
     using System.Data.Entity.Infrastructure;
     using System.Data.Entity.Infrastructure.DependencyResolution;
     using System.Data.Entity.SqlServer;
-    using System.Data.Entity.SqlServerCompact;
+    // // using System.Data.Entity.SqlServerCompact; // SqlServerCompact not in this fork // SqlServerCompact provider not included in this fork
     using System.Linq;
 
     public class FunctionalTestsConfiguration : DbConfiguration
@@ -62,8 +62,9 @@ namespace System.Data.Entity.TestHelpers
 
         public FunctionalTestsConfiguration()
         {
-            SetProviderServices(SqlCeProviderServices.ProviderInvariantName, SqlCeProviderServices.Instance);
-            SetProviderServices(System.Data.Entity.SqlServerCompact.Legacy.SqlCeProviderServices.ProviderInvariantName, System.Data.Entity.SqlServerCompact.Legacy.SqlCeProviderServices.Instance);
+            // SqlServerCompact provider not included in this fork — omitted:
+            // SetProviderServices(SqlCeProviderServices.ProviderInvariantName, SqlCeProviderServices.Instance);
+            // SetProviderServices(System.Data.Entity.SqlServerCompact.Legacy.SqlCeProviderServices.ProviderInvariantName, System.Data.Entity.SqlServerCompact.Legacy.SqlCeProviderServices.Instance);
             SetProviderServices(SqlProviderServices.ProviderInvariantName, SqlProviderServices.Instance);
 
             SetDefaultConnectionFactory(new DefaultUnitTestsConnectionFactory());

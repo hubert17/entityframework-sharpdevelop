@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Open Technologies, Inc. All rights reserved. See License.txt in the project root for license information.
+// Copyright (c) Microsoft Open Technologies, Inc. All rights reserved. See License.txt in the project root for license information.
 
 namespace System.Data.Entity.SqlServerCompact
 {
@@ -10,7 +10,7 @@ namespace System.Data.Entity.SqlServerCompact
     using System.Data.Entity.Infrastructure.DependencyResolution;
     using System.Data.Entity.Infrastructure.Interception;
     using System.Data.Entity.Migrations.Sql;
-    using System.Data.Entity.SqlServerCompact.Resources;
+    // using System.Data.Entity.SqlServerCompact.Resources; // SqlServerCompact not in this fork
     using System.Data.SqlClient;
     using System.Data.SqlServerCe;
     using System.Linq;

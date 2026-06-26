@@ -1,4 +1,4 @@
-﻿<!--
+<!--
 ****************************************************************************************************
 Project global pre-settings.
 **************************************************************************************************** -->
@@ -9,13 +9,13 @@ Project global pre-settings.
   
   <PropertyGroup >
     <RuntimeVersionMajor>6</RuntimeVersionMajor>
-    <RuntimeVersionMinor>1</RuntimeVersionMinor>
+    <RuntimeVersionMinor>2</RuntimeVersionMinor>
     <ToolingVersionMajor Condition="'$(VisualStudioVersion)' == '11.0'">11</ToolingVersionMajor>
     <ToolingVersionMajor Condition="'$(VisualStudioVersion)' == '12.0'">12</ToolingVersionMajor>
     <ToolingVersionMinor Condition="'$(VisualStudioVersion)' == '11.0'">2</ToolingVersionMinor>
     <ToolingVersionMinor Condition="'$(VisualStudioVersion)' == '12.0'">0</ToolingVersionMinor>
-    <VersionRelease>0-alpha1</VersionRelease>
-    <VersionReleaseName>Alpha 1</VersionReleaseName>
+    <VersionRelease>0</VersionRelease>
+    <VersionReleaseName>Release</VersionReleaseName>
   </PropertyGroup>
 
   <!-- Default properties -->
@@ -54,8 +54,10 @@ Project global pre-settings.
   </PropertyGroup>
 
   <ItemGroup>
-    <BuildConfiguration Include="$(Configuration40)" />
-    <BuildConfiguration Include="$(Configuration45)" Condition="'$(Configuration)' == '$(Configuration45)'" />
+    <!-- Net40 config requires the .NET 4.0 Developer Pack which is no longer distributed.
+         Skip it by default; pass /p:IncludeNet40=true to opt back in. -->
+    <BuildConfiguration Include="$(Configuration40)" Condition="'$(IncludeNet40)' == 'true'" />
+    <BuildConfiguration Include="$(Configuration45)" />
   </ItemGroup>
 
   <PropertyGroup>

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -16,7 +16,7 @@
     <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -29,7 +29,7 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -242,7 +242,7 @@
     <Compile Include="ProductivityApi\DbContextTests.cs" />
     <Compile Include="ProductivityApi\DbFunctionScenarios.cs" />
     <Compile Include="ProductivityApi\DeadlockTests.cs" />
-    <Compile Include="ProductivityApi\SimpleScenariosForSqlCe35.cs" />
+    <!-- Removed: ProductivityApi\SimpleScenariosForSqlCe35.cs — SqlServerCompact not in this fork -->
     <Compile Include="ProductivityApi\TemplateTests.cs" />
     <Compile Include="Query\LinqToEntities\HasFlagTests.cs" />
     <Compile Include="Query\LinqToEntities\ProjectionTests.cs" />
@@ -263,7 +263,7 @@
     <Compile Include="ProductivityApi\TimeoutTests.cs" />
     <Compile Include="Query\ApplyOpRulesTests.cs" />
     <Compile Include="Query\LinqToEntities\EnumTests.cs" />
-    <Compile Include="Query\LinqToEntities\SqlCeFunctionsTests.cs" />
+    <!-- Removed: Query\LinqToEntities\SqlCeFunctionsTests.cs — SqlServerCompact not in this fork -->
     <Compile Include="Query\ModelDefinedFunctionTests.cs" />
     <Compile Include="Query\ProductModel.cs" />
     <Compile Include="Query\StoredProcedures\IceAndFireModel.cs" />
@@ -648,7 +648,7 @@
     <Compile Include="ProductivityApi\DatabaseTests.cs" />
     <Compile Include="ProductivityApi\DatabindingTests.cs" />
     <Compile Include="ProductivityApi\DbConnectionFactoryTests.cs" />
-    <Compile Include="ProductivityApi\DbContextTestsForSqlCe.cs" />
+    <!-- Removed: ProductivityApi\DbContextTestsForSqlCe.cs — SqlServerCompact not in this fork -->
     <Compile Include="ProductivityApi\DbEntityEntryTests.cs" />
     <Compile Include="ProductivityApi\DbModelTests.cs" />
     <Compile Include="ProductivityApi\DbPropertyValuesTests.cs" />
@@ -685,7 +685,7 @@
     <Compile Include="TestModels\SimpleModel\LoginsContext.cs" />
     <Compile Include="TestModels\SimpleModel\ModelWithWideProperties.cs" />
     <Compile Include="ProductivityApi\SimpleScenarios.cs" />
-    <Compile Include="ProductivityApi\SimpleScenariosForSqlCe.cs" />
+    <!-- Removed: ProductivityApi\SimpleScenariosForSqlCe.cs — SqlServerCompact not in this fork -->
     <Compile Include="ProductivityApi\SpatialTests.cs" />
     <Compile Include="TestModels\SpatialTvfsModel\SpatialNorthwindContext.cs" />
     <Compile Include="TestModels\SpatialTvfsModel\SpatialNorthwindInitializer.cs" />

@@ -1,8 +1,8 @@
-﻿// Copyright (c) Microsoft Open Technologies, Inc. All rights reserved. See License.txt in the project root for license information.
+// Copyright (c) Microsoft Open Technologies, Inc. All rights reserved. See License.txt in the project root for license information.
 
 namespace System.Data.Entity.Query.LinqToEntities
 {
-    using System.Data.Entity.SqlServerCompact;
+    // using System.Data.Entity.SqlServerCompact; // SqlServerCompact not in this fork
     using System.Data.Entity.TestModels.ArubaCeModel;
     using System.Linq;
     using Xunit;

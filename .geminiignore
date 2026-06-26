@@ -1,0 +1,67 @@
+# ==========================================
+# Gemini AI Context Ignore Rules (.geminiignore)
+# Optimized for Entity Framework SharpDevelop
+# ==========================================
+
+# --- Version Control & Metadata ---
+.git/
+.gitignore
+.gitattributes
+
+# --- IDE & User Specific Settings ---
+.vs/
+*.suo
+*.user
+*.sln.docstates
+*.userosscache
+*.sln.cache
+*.csproj.DotSettings
+*.sln.DotSettings
+
+# --- Build Artifacts & Binaries (Crucial for token savings) ---
+[Bb]in/
+[Oo]bj/
+*.dll
+*.exe
+*.pdb
+*.lib
+*.a
+*.o
+*.so
+*.dylib
+*.msi
+*.msp
+*.msm
+
+# --- Dependency Packages ---
+packages/
+.nuget/
+
+# --- Test Outputs & Coverage ---
+[Tt]est[Rr]esult*/
+coverage/
+*.coverage
+*.coveragexml
+OpenCoverResults.xml
+
+# --- Large Generated Files & Cache ---
+*.log
+*.patch
+*.orig
+*.BASE.*
+*.REMOTE.*
+*.LOCAL.*
+StyleCop.*
+[Ss]tyle[Cc]op.*
+
+# --- Specific XML Docs (Avoid sending huge API doc files to LLM) ---
+src/EFTools/EntityDesign/VisualStudio/ItemTemplate/VersionedTemplates/
+EntityFramework.xml
+EntityFramework.SqlServer.xml
+EntityFramework.SqlServerCompact.xml
+
+# --- OS Generated Files ---
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/

@@ -1,15 +1,15 @@
-﻿// Copyright (c) Microsoft Open Technologies, Inc. All rights reserved. See License.txt in the project root for license information.
+// Copyright (c) Microsoft Open Technologies, Inc. All rights reserved. See License.txt in the project root for license information.
 
 namespace System.Data.Entity.Migrations
 {
     using System.Data.Common;
     using System.Data.Entity.Migrations.Sql;
     using System.Data.Entity.SqlServer;
-    using System.Data.Entity.SqlServerCompact;
+    // using System.Data.Entity.SqlServerCompact; // SqlServerCompact not in this fork
     using System.Data.Entity.TestHelpers;
     using System.Data.Entity.Utilities;
     using System.Data.SqlClient;
-    using System.Data.SqlServerCe;
+    // using System.Data.SqlServerCe; // SqlServerCompact not in this fork
     using System.IO;
 
     public abstract class TestDatabase
@@ -185,196 +185,5 @@ namespace System.Data.Entity.Migrations
         }
     }
 
-    public class SqlCeTestDatabase : TestDatabase
-    {
-        private readonly string _name;
-        public const int NtextLength = (1 << 29) - 1;
-
-        public SqlCeTestDatabase(string name)
-        {
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                throw new ArgumentException("'" + name + "' can not be null or empty.");
-            }
-
-            _name = name;
-
-            ConnectionString = ModelHelpers.SimpleCeConnectionString(name);
-            ProviderName = SqlCeProviderServices.ProviderInvariantName;
-            ProviderManifestToken = "4.0";
-            SqlGenerator = new SqlCeMigrationSqlGenerator();
-            Info = CreateInfoContext(new SqlCeConnection(ConnectionString), false);
-        }
-
-        public override InfoContext Info
-        {
-            get
-            {
-                // This is not ideal, but the SqlCe provider does not support schemas. In order
-                // to map to these special schema-qualified views, we need to create wrappers for them.
-                SyncInfoWrappers();
-
-                return base.Info;
-            }
-            protected set { base.Info = value; }
-        }
-
-        public override void EnsureDatabase()
-        {
-            if (!File.Exists(_name + ".sdf"))
-            {
-                using (var engine = new SqlCeEngine
-                                        {
-                                            LocalConnectionString = ConnectionString
-                                        })
-                {
-                    engine.CreateDatabase();
-                }
-            }
-        }
-
-        public override bool Exists()
-        {
-            return File.Exists(_name + ".sdf");
-        }
-
-        public override void ResetDatabase()
-        {
-            DropDatabase();
-            EnsureDatabase();
-        }
-
-        public override void DropDatabase()
-        {
-            File.Delete(_name + ".sdf");
-        }
-
-        public override DbConnection CreateConnection(string connectionString)
-        {
-            return new SqlCeConnection(connectionString);
-        }
-
-        private void SyncInfoWrappers()
-        {
-            if (!Exists())
-            {
-                return;
-            }
-
-            if (!TableExists("TABLES"))
-            {
-                ExecuteNonQuery(
-                    @"CREATE TABLE TABLES (
-    TABLE_SCHEMA nvarchar(128),
-    TABLE_NAME nvarchar(128),
-    PRIMARY KEY (TABLE_SCHEMA, TABLE_NAME)
-)");
-            }
-
-            if (!TableExists("COLUMNS"))
-            {
-                ExecuteNonQuery(
-                    @"CREATE TABLE COLUMNS (
-    TABLE_SCHEMA nvarchar(128),
-    TABLE_NAME nvarchar(128),
-    COLUMN_NAME nvarchar(128),
-    ORDINAL_POSITION int,
-    COLUMN_DEFAULT nvarchar(4000),
-    IS_NULLABLE nvarchar(3),
-    DATA_TYPE nvarchar(128),
-    CHARACTER_MAXIMUM_LENGTH int,
-    NUMERIC_PRECISION smallint,
-    NUMERIC_SCALE smallint,
-    DATETIME_PRECISION int,
-    PRIMARY KEY (TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME)
-)");
-            }
-
-            if (!TableExists("TABLE_CONSTRAINTS"))
-            {
-                ExecuteNonQuery(
-                    @"CREATE TABLE TABLE_CONSTRAINTS (
-    CONSTRAINT_SCHEMA nvarchar(128),
-    CONSTRAINT_NAME nvarchar(128),
-    TABLE_SCHEMA nvarchar(128),
-    TABLE_NAME nvarchar(128),
-    CONSTRAINT_TYPE nvarchar(128),
-    PRIMARY KEY (CONSTRAINT_SCHEMA, CONSTRAINT_NAME)
-)");
-            }
-
-            if (!TableExists("REFERENTIAL_CONSTRAINTS"))
-            {
-                ExecuteNonQuery(
-                    @"CREATE TABLE REFERENTIAL_CONSTRAINTS (
-    CONSTRAINT_SCHEMA nvarchar(128),
-    CONSTRAINT_NAME nvarchar(128),
-    UNIQUE_CONSTRAINT_SCHEMA nvarchar(128),
-    UNIQUE_CONSTRAINT_NAME nvarchar(128),
-    DELETE_RULE nvarchar(128),
-    PRIMARY KEY (CONSTRAINT_SCHEMA, CONSTRAINT_NAME)
-)");
-            }
-
-            if (!TableExists("KEY_COLUMN_USAGE"))
-            {
-                ExecuteNonQuery(
-                    @"CREATE TABLE KEY_COLUMN_USAGE (
-    CONSTRAINT_SCHEMA nvarchar(128),
-    CONSTRAINT_NAME nvarchar(128),
-    TABLE_SCHEMA nvarchar(128),
-    TABLE_NAME nvarchar(128),
-    COLUMN_NAME nvarchar(128),
-    ORDINAL_POSITION int,
-    PRIMARY KEY (CONSTRAINT_SCHEMA, CONSTRAINT_NAME, TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME)
-)");
-            }
-
-            ExecuteNonQuery("DELETE TABLES");
-            ExecuteNonQuery(
-                @"INSERT TABLES
-SELECT '' TABLE_SCHEMA, TABLE_NAME
-FROM INFORMATION_SCHEMA.TABLES");
-
-            ExecuteNonQuery("DELETE COLUMNS");
-            ExecuteNonQuery(
-                @"INSERT COLUMNS
-SELECT
-    '' TABLE_SCHEMA,
-    TABLE_NAME,
-    COLUMN_NAME,
-    ORDINAL_POSITION,
-    COLUMN_DEFAULT,
-    IS_NULLABLE,
-    DATA_TYPE,
-    CHARACTER_MAXIMUM_LENGTH,
-    NUMERIC_PRECISION,
-    NUMERIC_SCALE,
-    DATETIME_PRECISION
-FROM INFORMATION_SCHEMA.COLUMNS");
-
-            ExecuteNonQuery("DELETE TABLE_CONSTRAINTS");
-            ExecuteNonQuery(
-                @"INSERT TABLE_CONSTRAINTS
-SELECT '' CONSTRAINT_SCHEMA, CONSTRAINT_NAME, '' TABLE_SCHEMA, TABLE_NAME, CONSTRAINT_TYPE
-FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS");
-
-            ExecuteNonQuery("DELETE REFERENTIAL_CONSTRAINTS");
-            ExecuteNonQuery(
-                @"INSERT REFERENTIAL_CONSTRAINTS
-SELECT '' CONSTRAINT_SCHEMA, CONSTRAINT_NAME, '' UNIQUE_CONSTRAINT_SCHEMA, UNIQUE_CONSTRAINT_NAME, DELETE_RULE
-FROM INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS");
-
-            ExecuteNonQuery("DELETE KEY_COLUMN_USAGE");
-            ExecuteNonQuery(
-                @"INSERT KEY_COLUMN_USAGE
-SELECT '' CONSTRAINT_SCHEMA, CONSTRAINT_NAME, '' TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, ORDINAL_POSITION
-FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE");
-        }
-
-        private bool TableExists(string name)
-        {
-            return ExecuteScalar<int>("SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '" + name + "'") != 0;
-        }
-    }
+    // SqlCeTestDatabase removed — SqlServerCompact provider not included in this fork.
 }

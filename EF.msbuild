@@ -15,10 +15,6 @@
     <ProjectToBuild Include="src\EntityFramework.PowerShell\EntityFramework.PowerShell.csproj" />
     <ProjectToBuild Include="src\EntityFramework.PowerShell.Utility\EntityFramework.PowerShell.Utility.csproj" />
     <ProjectToBuild Include="src\EntityFramework.SqlServer\EntityFramework.SqlServer.csproj" />
-    <ProjectToBuild Include="src\EntityFramework.SqlServerCompact\EntityFramework.SqlServerCompact.csproj">
-      <RestorePackages>true</RestorePackages>
-    </ProjectToBuild>
-    <ProjectToBuild Include="src\EntityFramework.SqlServerCompact\EntityFramework.SqlServerCompact.Legacy.csproj" />
     <ProjectToBuild Include="src\Migrate\Migrate.csproj" />
   </ItemGroup>
   
@@ -70,7 +66,7 @@
     <PropertyGroup>
       <PackagesConfig>$([System.IO.Path]::Combine($(NuGetToolsPath), "packages.config"))</PackagesConfig>
       <SolutionRequireConsentSwitch Condition=" $(RequireRestoreConsent) == 'true' ">-RequireConsent</SolutionRequireConsentSwitch>
-      <RestoreCommand>$(NuGetCommand) install "$(PackagesConfig)" -source "$(PackageSources)"  $(SolutionRequireConsentSwitch) -solutionDir "$(SolutionDir) "</RestoreCommand>
+      <RestoreCommand>$(NuGetCommand) install "$(PackagesConfig)" -source "$(PackageSources)"  $(SolutionRequireConsentSwitch) -solutionDir $(SolutionDir)</RestoreCommand>
     </PropertyGroup>
     <Exec Command="$(RestoreCommand)"
           LogStandardErrorAsError="true" />

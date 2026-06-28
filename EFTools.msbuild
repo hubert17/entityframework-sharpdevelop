@@ -16,7 +16,6 @@
     <ItemGroup>
         <Projects Include="$(SolutionDir)src\EntityFramework\EntityFramework.csproj" />
         <Projects Include="$(SolutionDir)src\EntityFramework.SqlServer\EntityFramework.SqlServer.csproj" />
-        <Projects Include="$(SolutionDir)src\EntityFramework.SqlServerCompact\EntityFramework.SqlServerCompact.csproj" />
         <Projects Include="$(SolutionDir)src\EFTools\XmlCore\XmlCore.csproj" />
         <Projects Include="$(SolutionDir)src\EFTools\DesignXmlCore\DesignXmlCore.csproj" />
         <Projects Include="$(SolutionDir)src\EFTools\EntityDesignModel\EntityDesignModel.csproj" />
@@ -77,7 +76,7 @@
         <PropertyGroup>
             <PackagesConfig>$([System.IO.Path]::Combine($(NuGetToolsPath), "packages.config"))</PackagesConfig>
             <SolutionRequireConsentSwitch Condition=" $(RequireRestoreConsent) == 'true' ">-RequireConsent</SolutionRequireConsentSwitch>
-            <RestoreCommand>$(NuGetCommand) install "$(PackagesConfig)" -source "$(PackageSources)"  $(SolutionRequireConsentSwitch) -solutionDir "$(SolutionDir) "</RestoreCommand>
+            <RestoreCommand>$(NuGetCommand) install "$(PackagesConfig)" -source "$(PackageSources)"  $(SolutionRequireConsentSwitch) -solutionDir "$(SolutionDir.TrimEnd('\'))"</RestoreCommand>
         </PropertyGroup>
         <Exec Command="$(RestoreCommand)"
               LogStandardErrorAsError="true" />

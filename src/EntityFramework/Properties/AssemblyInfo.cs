@@ -10,6 +10,10 @@ using System.Runtime.CompilerServices;
 
 #endif
 
+[assembly: AssemblyVersion("6.0.0.0")]
+[assembly: AssemblyFileVersion("6.2.0.1014")]
+[assembly: AssemblyInformationalVersion("6.2.0-61014")]
+
 [assembly: AssemblyTitle("EntityFramework")]
 [assembly: AssemblyDescription("EntityFramework.dll")]
 [assembly: AssemblyDefaultAlias("EntityFramework.dll")]

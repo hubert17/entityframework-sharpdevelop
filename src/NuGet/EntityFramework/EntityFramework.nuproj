@@ -3,10 +3,11 @@
   <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), build.cmd))\tools\EntityFramework.settings.targets"/>
   <PropertyGroup>
     <NuSpecFile>EntityFramework.nuspec</NuSpecFile>
+    <NuGetPackageId>EntityFramework.SharpDevelop5</NuGetPackageId>
   </PropertyGroup>
   <ItemGroup>
     <NuGetContent Include="EntityFramework.dll;EntityFramework.pdb;EntityFramework.xml">
-      <Source>$(OutputPath40)</Source>
+      <Source>$(OutputPath45)</Source>
       <Destination>lib\net40</Destination>
     </NuGetContent>
     <NuGetContent Include="EntityFramework.dll;EntityFramework.pdb;EntityFramework.xml">
@@ -14,11 +15,11 @@
       <Destination>lib\net45</Destination>
     </NuGetContent>
     <NuGetContent Include="EntityFramework.SqlServer.dll;EntityFramework.SqlServer.xml">
-      <Source>$(OutputPath40)</Source>
+      <Source>$(OutputPath45)</Source>
       <Destination>lib\net40</Destination>
     </NuGetContent>
     <NuGetContent Include="EntityFramework.pdb" Condition="'$(NuGetPackSymbols)' == 'true'">
-      <Source>$(OutputPath40)</Source>
+      <Source>$(OutputPath45)</Source>
       <Destination>lib\net40</Destination>
     </NuGetContent>
     <NuGetContent Include="EntityFramework.pdb" Condition="'$(NuGetPackSymbols)' == 'true'">
@@ -31,7 +32,7 @@
       <Destination>lib\net45</Destination>
     </NuGetContent>
     <NuGetContent Include="EntityFramework.SqlServer.pdb" Condition="'$(NuGetPackSymbols)' == 'true'">
-      <Source>$(OutputPath40)</Source>
+      <Source>$(OutputPath45)</Source>
       <Destination>lib\net40</Destination>
     </NuGetContent>
     <NuGetContent Include="EntityFramework.SqlServer.pdb" Condition="'$(NuGetPackSymbols)' == 'true'">

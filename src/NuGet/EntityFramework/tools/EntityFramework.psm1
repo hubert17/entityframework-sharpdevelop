@@ -10,6 +10,16 @@ $knownExceptions = @(
     'System.Data.Entity.Migrations.ProjectTypeNotSupportedException'
 )
 
+function Is-SharpDevelop
+{
+    try {
+        $null = [ICSharpCode.SharpDevelop.Project.ProjectService]
+        return $true
+    } catch {
+        return $false
+    }
+}
+
 <#
 .SYNOPSIS
     Adds or updates an Entity Framework provider entry in the project config
@@ -56,6 +66,12 @@ function Add-EFProvider
             Mandatory = $true)]
         [string] $TypeName
     )
+
+    if (Is-SharpDevelop)
+    {
+        Add-EFProviderToProject -Project $Project -InvariantName $InvariantName -TypeName $TypeName
+        return
+    }
 
     Check-Project $project
 
@@ -189,6 +205,12 @@ function Initialize-EFConfiguration
             Mandatory = $true)]
         $Project
     )
+
+    if (Is-SharpDevelop)
+    {
+        Add-EFConfigurationToProject -Project $Project
+        return
+    }
 
     Check-Project $project
 
@@ -413,6 +435,14 @@ function Add-Migration
         [string] $ConnectionProviderName,
         [switch] $IgnoreChanges)
 
+    if (Is-SharpDevelop)
+    {
+        $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+        $proxyScript = Join-Path $scriptDir "Add-Migration.ps1"
+        & $proxyScript @PSBoundParameters
+        return
+    }
+
     $runner = New-MigrationsRunner $ProjectName $StartUpProjectName $null $ConfigurationTypeName $ConnectionStringName $ConnectionString $ConnectionProviderName
 
     try
@@ -539,6 +569,14 @@ function Update-Database
         [parameter(ParameterSetName = 'ConnectionStringAndProviderName',
             Mandatory = $true)]
         [string] $ConnectionProviderName)
+
+    if (Is-SharpDevelop)
+    {
+        $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+        $proxyScript = Join-Path $scriptDir "Update-Database.ps1"
+        & $proxyScript @PSBoundParameters
+        return
+    }
 
     $runner = New-MigrationsRunner $ProjectName $StartUpProjectName $null $ConfigurationTypeName $ConnectionStringName $ConnectionString $ConnectionProviderName
 
@@ -933,7 +971,7 @@ function Build-Project($project)
 
 function Get-EntityFrameworkInstallPath($project)
 {
-    $package = Get-Package -ProjectName $project.FullName | ?{ $_.Id -eq 'EntityFramework' }
+    $package = Get-Package -ProjectName $project.FullName | ?{ $_.Id -eq 'EntityFramework' -or $_.Id -eq 'EntityFramework.SharpDevelop' -or $_.Id -eq 'EntityFramework.SharpDevelop5' }
 
     if (!$package)
     {
@@ -955,8 +993,133 @@ function Get-PackageInstallPath($package)
     return $vsPackage.InstallPath
 }
 
+function Add-EFConfigurationToProject($Project)
+{
+    $projectDir = $Project.Directory
+    if (!$projectDir) {
+        # Fallback if Directory property has another name
+        $projectDir = Split-Path -Parent $Project.FileName
+    }
+    $configPath = Join-Path $projectDir "App.config"
+    if (Test-Path (Join-Path $projectDir "Web.config")) {
+        $configPath = Join-Path $projectDir "Web.config"
+    }
+
+    if (-not (Test-Path $configPath)) {
+        $initialXml = @"
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+</configuration>
+"@
+        [System.IO.File]::WriteAllText($configPath, $initialXml)
+        
+        $itemTypeObj = New-Object ICSharpCode.SharpDevelop.Project.ItemType "None"
+        $projectItem = New-Object ICSharpCode.SharpDevelop.Project.FileProjectItem $Project, $itemTypeObj, $configPath
+        [ICSharpCode.SharpDevelop.Project.ProjectService]::AddProjectItem($Project, $projectItem)
+        $Project.Save()
+    }
+
+    [xml]$xml = Get-Content $configPath
+    $configSection = $xml.SelectSingleNode("/configuration/configSections")
+    if (-not $configSection) {
+        $configSection = $xml.CreateElement("configSections")
+        $configurationNode = $xml.SelectSingleNode("/configuration")
+        $firstChild = $configurationNode.FirstChild
+        if ($firstChild) {
+            $configurationNode.InsertBefore($configSection, $firstChild) | Out-Null
+        } else {
+            $configurationNode.AppendChild($configSection) | Out-Null
+        }
+    }
+
+    $section = $configSection.SelectSingleNode("section[@name='entityFramework']")
+    if (-not $section) {
+        $section = $xml.CreateElement("section")
+        $section.SetAttribute("name", "entityFramework")
+        $section.SetAttribute("type", "System.Data.Entity.Internal.ConfigFile.EntityFrameworkSection, EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089")
+        $section.SetAttribute("requirePermission", "false")
+        $configSection.AppendChild($section) | Out-Null
+    }
+
+    $efNode = $xml.SelectSingleNode("/configuration/entityFramework")
+    if (-not $efNode) {
+        $efNode = $xml.CreateElement("entityFramework")
+        $xml.SelectSingleNode("/configuration").AppendChild($efNode) | Out-Null
+    }
+
+    $cfNode = $efNode.SelectSingleNode("defaultConnectionFactory")
+    if (-not $cfNode) {
+        $cfNode = $xml.CreateElement("defaultConnectionFactory")
+        $cfNode.SetAttribute("type", "System.Data.Entity.Infrastructure.LocalDbConnectionFactory, EntityFramework")
+        $paramsNode = $xml.CreateElement("parameters")
+        $paramNode = $xml.CreateElement("parameter")
+        $paramNode.SetAttribute("value", "mssqllocaldb")
+        $paramsNode.AppendChild($paramNode) | Out-Null
+        $cfNode.AppendChild($paramsNode) | Out-Null
+        $efNode.AppendChild($cfNode) | Out-Null
+    }
+
+    $providersNode = $efNode.SelectSingleNode("providers")
+    if (-not $providersNode) {
+        $providersNode = $xml.CreateElement("providers")
+        $efNode.AppendChild($providersNode) | Out-Null
+    }
+
+    $providerNode = $providersNode.SelectSingleNode("provider[@invariantName='System.Data.SqlClient']")
+    if (-not $providerNode) {
+        $providerNode = $xml.CreateElement("provider")
+        $providerNode.SetAttribute("invariantName", "System.Data.SqlClient")
+        $providerNode.SetAttribute("type", "System.Data.Entity.SqlServer.SqlProviderServices, EntityFramework.SqlServer")
+        $providersNode.AppendChild($providerNode) | Out-Null
+    }
+
+    $xml.Save($configPath)
+}
+
+function Add-EFProviderToProject($Project, $InvariantName, $TypeName)
+{
+    $projectDir = $Project.Directory
+    if (!$projectDir) {
+        $projectDir = Split-Path -Parent $Project.FileName
+    }
+    $configPath = Join-Path $projectDir "App.config"
+    if (Test-Path (Join-Path $projectDir "Web.config")) {
+        $configPath = Join-Path $projectDir "Web.config"
+    }
+
+    if (-not (Test-Path $configPath)) {
+        Add-EFConfigurationToProject -Project $Project
+    }
+
+    [xml]$xml = Get-Content $configPath
+    $providersNode = $xml.SelectSingleNode("/configuration/entityFramework/providers")
+    if (-not $providersNode) {
+        Add-EFConfigurationToProject -Project $Project
+        [xml]$xml = Get-Content $configPath
+        $providersNode = $xml.SelectSingleNode("/configuration/entityFramework/providers")
+    }
+
+    $providerNode = $providersNode.SelectSingleNode("provider[@invariantName='$InvariantName']")
+    if (-not $providerNode) {
+        $providerNode = $xml.CreateElement("provider")
+        $providerNode.SetAttribute("invariantName", $InvariantName)
+        $providerNode.SetAttribute("type", $TypeName)
+        $providersNode.AppendChild($providerNode) | Out-Null
+        $xml.Save($configPath)
+    }
+}
+
 function Check-Project($project)
 {
+    if (Is-SharpDevelop)
+    {
+        if (!$project)
+        {
+            throw "Project cannot be null."
+        }
+        return
+    }
+
     if (!$project.FullName)
     {
         throw "The Project argument must refer to a Visual Studio project. Use the '`$project' variable provided by NuGet when running in install.ps1."

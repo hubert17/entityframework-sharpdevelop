@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Open Technologies, Inc. All rights reserved. See License.txt in the project root for license information.
+// Copyright (c) Microsoft Open Technologies, Inc. All rights reserved. See License.txt in the project root for license information.
 
 namespace System.Data.Entity.Migrations.Console
 {
@@ -39,7 +39,7 @@ namespace System.Data.Entity.Migrations.Console
             }
             catch (CommandLineHelpException ex)
             {
-                WriteLine(ex.ArgumentHelp.GetHelpText(Console.BufferWidth));
+                WriteLine(ex.ArgumentHelp.GetHelpText(GetConsoleBufferWidth()));
 
                 return ExitCodeSuccess;
             }
@@ -48,7 +48,7 @@ namespace System.Data.Entity.Migrations.Console
                 if (ex.ArgumentHelp != null)
                 {
                     WriteError(ex.ArgumentHelp.Message);
-                    WriteLine(ex.ArgumentHelp.GetHelpText(Console.BufferWidth));
+                    WriteLine(ex.ArgumentHelp.GetHelpText(GetConsoleBufferWidth()));
                 }
                 else
                 {
@@ -71,6 +71,18 @@ namespace System.Data.Entity.Migrations.Console
             }
 
             return ExitCodeSuccess;
+        }
+
+        private static int GetConsoleBufferWidth()
+        {
+            try
+            {
+                return Console.BufferWidth;
+            }
+            catch (System.IO.IOException)
+            {
+                return 80;
+            }
         }
 
         public void Run()
